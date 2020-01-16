@@ -14,6 +14,7 @@ extern crate serde_derive;
 
 mod api;
 mod config;
+mod middleware;
 mod models;
 mod services;
 
@@ -44,6 +45,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .data(pool.clone())
             .wrap(actix_web::middleware::Logger::default())
+            .wrap(crate::middleware::auth_middleware::Authentication)
             .configure(config::app::configure_services)
     })
     .bind(&app_url)?

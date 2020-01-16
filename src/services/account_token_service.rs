@@ -1,6 +1,10 @@
-use jsonwebtoken::Header;
+use {
+    diesel::prelude::*,
+    jsonwebtoken::{Header, TokenData, Validation},
+};
 
-use crate::models::account_token::AccountToken;
+use crate::models::account::Account;
+use crate::{config::db::Pool, models::account_token::AccountToken};
 
 pub static TOKEN_TYPE: &'static str = "bearer";
 
@@ -16,4 +20,24 @@ pub fn generate(username: String) -> String {
     };
 
     jsonwebtoken::encode(&Header::default(), &payload, &KEY).unwrap()
+}
+
+pub fn decode(token: String) -> jsonwebtoken::errors::Result<TokenData<AccountToken>> {
+    jsonwebtoken::decode::<AccountToken>(&token, &KEY, &Validation::default())
+}
+
+pub fn verify(data: TokenData<AccountToken>, pool: &Pool) -> Option<AccountToken> {
+    use crate::schema::accounts;
+
+    let connection = &pool.get().unwrap();
+
+    if accounts::table
+        .filter(accounts::columns::username.eq(&data.claims.username))
+        .get_result::<Account>(connection)
+        .is_ok()
+    {
+        Some(data.claims)
+    } else {
+        None
+    }
 }

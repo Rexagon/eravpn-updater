@@ -59,7 +59,7 @@ pub fn sign_up(data: SignUpData, pool: &Pool) -> Result<(), AccountServiceError>
     Ok(())
 }
 
-fn find_account_by_username(username: &str, connection: &Connection) -> QueryResult<Account> {
+pub fn find_account_by_username(username: &str, connection: &Connection) -> QueryResult<Account> {
     use crate::schema::accounts;
 
     accounts::table
