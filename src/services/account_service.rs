@@ -2,7 +2,7 @@ use actix_web::{http::StatusCode, web};
 
 use crate::{
     config::db::Pool,
-    error::{ServiceError, ServiceErrorMessage},
+    error::ServiceError,
     messages_enum,
     models::account::{Account, LoginDto},
     models::account_token::{self, AccountToken},
