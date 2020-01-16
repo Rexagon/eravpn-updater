@@ -8,13 +8,7 @@ use crate::{
     services::account_token_service,
 };
 
-#[derive(Serialize)]
-pub struct TokenResponseBody {
-    pub token: String,
-    pub token_type: String,
-}
-
-pub fn login(login: LoginDto, pool: &Pool) -> Result<TokenResponseBody, AccountServiceError> {
+pub fn login(login: LoginDto, pool: &Pool) -> Result<String, AccountServiceError> {
     let connection = &pool.get().unwrap();
 
     let account_to_verify: Account = match accounts
@@ -32,10 +26,7 @@ pub fn login(login: LoginDto, pool: &Pool) -> Result<TokenResponseBody, AccountS
 
     match bcrypt::verify(&login.password, &account_to_verify.password) {
         Ok(true) => {
-            return Ok(TokenResponseBody {
-                token: account_token_service::generate(login.username),
-                token_type: account_token_service::TOKEN_TYPE.to_string(),
-            });
+            return Ok(account_token_service::generate(login.username));
         }
         Err(err) => info!("{:?}", err),
         _ => (),
