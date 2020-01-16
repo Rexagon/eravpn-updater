@@ -25,10 +25,10 @@ impl ServiceError {
 
 #[macro_export]
 macro_rules! messages_enum {
-    (enum $name:ident {
+    ($visibility:vis enum $name:ident {
         $($variant:ident),*,
     }) => {
-        enum $name {
+        $visibility enum $name {
             $($variant),*
         }
 

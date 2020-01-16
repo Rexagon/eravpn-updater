@@ -1,11 +1,11 @@
-use actix_web::{http::StatusCode, web};
+use {bcrypt, diesel::prelude::*};
 
 use crate::{
     config::db::Pool,
-    error::ServiceError,
     messages_enum,
     models::account::{Account, LoginDto},
-    models::account_token::{self, AccountToken},
+    schema::accounts::dsl::*,
+    services::account_token_service,
 };
 
 #[derive(Serialize)]
@@ -14,21 +14,38 @@ pub struct TokenResponseBody {
     pub token_type: String,
 }
 
-pub fn login(login: LoginDto, pool: &web::Data<Pool>) -> Result<TokenResponseBody, ServiceError> {
-    match Account::login(login, &pool.get().unwrap()) {
-        Some(login_info) => Ok(TokenResponseBody {
-            token: AccountToken::generate(login_info.username),
-            token_type: account_token::TYPE.to_string(),
-        }),
-        None => Err(ServiceError::new(
-            StatusCode::UNAUTHORIZED,
-            AccountServiceError::WrongCredentials,
-        )),
+pub fn login(login: LoginDto, pool: &Pool) -> Result<TokenResponseBody, AccountServiceError> {
+    let connection = &pool.get().unwrap();
+
+    let account_to_verify: Account = match accounts
+        .filter(username.eq(&login.username))
+        .get_result(connection)
+    {
+        Ok(acc) => acc,
+        Err(_) => {
+            info!("Not found");
+            return Err(AccountServiceError::WrongCredentials);
+        }
+    };
+
+    info!("Found account: {:?}", account_to_verify);
+
+    match bcrypt::verify(&login.password, &account_to_verify.password) {
+        Ok(true) => {
+            return Ok(TokenResponseBody {
+                token: account_token_service::generate(login.username),
+                token_type: account_token_service::TOKEN_TYPE.to_string(),
+            });
+        }
+        Err(err) => info!("{:?}", err),
+        _ => (),
     }
+
+    return Err(AccountServiceError::WrongCredentials);
 }
 
 messages_enum! {
-    enum AccountServiceError {
+    pub enum AccountServiceError {
         WrongCredentials,
     }
 }
