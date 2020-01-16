@@ -12,8 +12,12 @@ pub fn configure_services(cfg: &mut web::ServiceConfig) {
             .service(
                 web::scope("/auth")
                     .service(
-                        web::resource("/login")
-                            .route(web::post().to(account_controller::login))
+                        web::resource("/signin")
+                            .route(web::post().to(account_controller::sign_in))
+                    )
+                    .service(
+                        web::resource("/signup")
+                            .route(web::post().to(account_controller::sign_up))
                     )
             )
     );
