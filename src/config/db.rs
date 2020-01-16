@@ -16,7 +16,7 @@ pub fn migrate_and_configure(url: &str) -> Pool {
         .build(manager)
         .expect("Unable to create connection pool");
 
-    embedded_migrations::run(&pool.get().expect("Unable to migrate"));
+    embedded_migrations::run(&pool.get().unwrap()).expect("Unable to migrate");
 
     pool
 }

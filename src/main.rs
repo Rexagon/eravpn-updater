@@ -9,18 +9,22 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
+#[macro_use]
+extern crate serde_derive;
+
 mod api;
 mod config;
 mod models;
+mod services;
+
+mod constants;
+mod error;
 mod schema;
 
 use {
-    actix_web::{HttpServer, App},
-    actix_service::Service,
-    futures::FutureExt,
-    std::{io, env},
+    actix_web::{App, HttpServer},
+    std::{env, io},
 };
-use actix_web::dev::Factory;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
@@ -42,7 +46,7 @@ async fn main() -> io::Result<()> {
             .wrap(actix_web::middleware::Logger::default())
             .configure(config::app::configure_services)
     })
-        .bind(&app_url)?
-        .run()
-        .await
+    .bind(&app_url)?
+    .run()
+    .await
 }
