@@ -1,0 +1,17 @@
+@import './fonts.scss';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-size: 14pt;
+  font-weight: normal;
+  font-family: 'Product Sans', Roboto, Arial, sans-serif;
+}
+
+code {
+  font-family: 'Noto Sans', monospace;
+}
