@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Row, Col } from 'react-bootstrap';
 
 import { signIn } from '../../store/authentication';
 
@@ -8,7 +9,19 @@ import CenterLayout from '../layouts/CenterLayout';
 
 const SignInPage = ({ signInConnect, isInProcess }) => (
   <CenterLayout>
-    <SignInForm onSubmit={signInConnect} disabled={isInProcess} />
+    <Row>
+      <Col className="text-center">
+        <h1>
+          <b>EraVPN Updater</b>
+        </h1>
+        <hr />
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <SignInForm onSubmit={signInConnect} disabled={isInProcess} />
+      </Col>
+    </Row>
   </CenterLayout>
 );
 

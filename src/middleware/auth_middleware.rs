@@ -2,7 +2,8 @@ use {
     actix_service::{Service, Transform},
     actix_web::{
         dev::{ServiceRequest, ServiceResponse},
-        Error, HttpResponse,
+        http::StatusCode,
+        Error,
     },
     futures::{
         future::{ok, Ready},
@@ -14,8 +15,7 @@ use {
     },
 };
 
-use crate::models::response::ResponseBody;
-use crate::{config::db::Pool, constants, services::account_token_service};
+use crate::{config::db::Pool, constants, response::ServiceError, services::account_token_service};
 
 pub struct Authentication;
 
@@ -66,11 +66,7 @@ where
             })
         } else {
             Box::pin(async move {
-                Ok(req.into_response(
-                    HttpResponse::Unauthorized()
-                        .json(ResponseBody::new((), false))
-                        .into_body(),
-                ))
+                Err(ServiceError::new(StatusCode::UNAUTHORIZED, "Unauthorized").into())
             })
         }
     }

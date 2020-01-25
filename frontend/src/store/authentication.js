@@ -14,9 +14,6 @@ export const signIn = data => async dispatch => {
 
   try {
     const response = (await axios.post(`auth/signin`, data)).data;
-    if (response.success !== true) {
-      throw new Error();
-    }
 
     axios.defaults.headers[
       'Authorization'

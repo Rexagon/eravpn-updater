@@ -19,7 +19,7 @@ mod models;
 mod services;
 
 mod constants;
-mod error;
+mod response;
 mod schema;
 
 use {

@@ -20,7 +20,7 @@ const NotFoundPage = () => (
     <Row>
       <Col className="text-center">
         <code className="h3">
-          <Link to="/">Take me home</Link>
+          <Link to="/">Home</Link>
         </code>
       </Col>
     </Row>
