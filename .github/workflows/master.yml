@@ -1,0 +1,49 @@
+name: master
+
+on: [push]
+
+env:
+  HOST: ${{ secrets.DEPLOY_HOST }}
+  USERNAME: ${{ secrets.DEPLOY_USERNAME }}
+  PORT: ${{ secrets.DEPLOY_PORT }}
+  PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
+
+jobs:
+  build_backend:
+    runs-on: ubuntu-latest
+
+    env:
+      SECRET_BINARY_KEY: ${{ secrets.SECRET_BINARY_KEY }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: sudo apt-get install libpq-dev
+    - name: Create secrets
+      run: printf "%b" $SECRET_BINARY_KEY > src/secret.key
+    - name: Build
+      run: cargo build --release --verbose
+    - name: Deploy
+      uses: appleboy/scp-action@master
+      with:
+        source: "target/release/eravpn-updater"
+        target: ${{ secrets.DEPLOY_TARGET_BACKEND }}
+        strip_components: 2
+
+  build_frontend:
+    runs-on: ubuntu-latest
+
+    env:
+      REACT_APP_API_URL: ${{ secrets.API_URL }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install and build
+      run: cd frontend && npm install && npm run build
+    - name: Deploy
+      uses: appleboy/scp-action@master
+      with:
+        source: "frontend/build/*"
+        target: ${{ secrets.DEPLOY_TARGET_FRONTEND }}
+        strip_components: 2
+        rm: true
