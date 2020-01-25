@@ -1,22 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import LoginPage from './pages/LoginPage';
+import Pages from './routes/Pages';
 
-const App = ({ store }) => (
-  <Provider store={store}>
-    <Router>
-      <Route path="/">
-        <LoginPage />
-      </Route>
-    </Router>
-  </Provider>
+const App = () => (
+  <Router>
+    <Route component={Pages} />
+  </Router>
 );
-
-App.propTypes = {
-  store: PropTypes.object.isRequired
-};
 
 export default App;

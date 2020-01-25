@@ -1,16 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import axios from 'axios';
 
-import rootReducer from './reducers';
-import initialState from './initialState';
+import store from './store';
 
 import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/index.scss';
 
-const store = createStore(rootReducer, initialState, applyMiddleware(thunk));
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
-ReactDOM.render(<App store={store} />, document.getElementById('root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);

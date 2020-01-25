@@ -1,25 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
-import history from '../history';
-
-const SignedOutRoute = ({ component, isAuthenticated, ...otherProps }) => {
+const SignedOutRoute = ({ component, isAuthenticated, ...rest }) => {
   if (isAuthenticated === true) {
-    history.push('/home');
+    return <Redirect to="/home" />;
   }
 
+  const Component = component;
+
   return (
-    <>
-      <header>Signed out header</header>
-      <Route render={otherProps => <Component {...otherProps} />} />
-      <footer>Signed out footer</footer>
-    </>
+    <Route {...rest} render={routeProps => <Component {...routeProps} />} />
   );
 };
 
-const mapStateToProps = ({ isAuthenticated }) => ({
-  isAuthenticated
+const mapStateToProps = ({ authentication }) => ({
+  isAuthenticated: authentication.isAuthenticated
 });
 
 export default connect(mapStateToProps)(SignedOutRoute);

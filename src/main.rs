@@ -23,6 +23,7 @@ mod error;
 mod schema;
 
 use {
+    actix_cors::Cors,
     actix_web::{App, HttpServer},
     std::{env, io},
 };
@@ -45,6 +46,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .data(pool.clone())
             .wrap(actix_web::middleware::Logger::default())
+            .wrap(Cors::default())
             .wrap(crate::middleware::auth_middleware::Authentication)
             .configure(config::app::configure_services)
     })

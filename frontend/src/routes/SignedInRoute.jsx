@@ -1,25 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
-import history from '../history';
-
-const SignedInRoute = ({ component, isAuthenticated, ...otherProps }) => {
+const SignedInRoute = ({ component, isAuthenticated, ...rest }) => {
   if (isAuthenticated === false) {
-    history.push('/signin');
+    return <Redirect to="/" />;
   }
 
+  const Component = component;
+
   return (
-    <>
-      <header>Signed in header</header>
-      <Route render={otherProps => <Component {...otherProps} />} />
-      <footer>Signed in footer</footer>
-    </>
+    <Route {...rest} render={routeProps => <Component {...routeProps} />} />
   );
 };
 
-const mapStateToProps = ({ isAuthenticated }) => ({
-  isAuthenticated
+const mapStateToProps = ({ authentication }) => ({
+  isAuthenticated: authentication.isAuthenticated
 });
 
 export default connect(mapStateToProps)(SignedInRoute);
