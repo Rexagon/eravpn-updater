@@ -4,7 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 
 const SignedInRoute = ({ component, isAuthenticated, ...rest }) => {
   if (isAuthenticated === false) {
-    return <Redirect to="/" />;
+    return <Redirect to="/signin" />;
   }
 
   const Component = component;

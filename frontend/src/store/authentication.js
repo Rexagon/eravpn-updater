@@ -1,4 +1,8 @@
 import axios from 'axios';
+import { parseJwt } from '../stuff/jwt';
+
+const TOKEN_STORAGE_ITEM = 'token';
+const TOKEN_TYPE_STORAGE_ITEM = 'token_type';
 
 export const ACTION_TYPES = {
   SIGN_IN: 'SIGN_IN',
@@ -13,11 +17,13 @@ export const signIn = data => async dispatch => {
   });
 
   try {
-    const response = (await axios.post(`auth/signin`, data)).data;
+    const { token, token_type: tokenType } = (
+      await axios.post(`auth/signin`, data)
+    ).data;
 
-    axios.defaults.headers[
-      'Authorization'
-    ] = `${response.data.token_type} ${response.data.token}`;
+    axios.defaults.headers['Authorization'] = `${tokenType} ${token}`;
+    window.localStorage.setItem(TOKEN_STORAGE_ITEM, token);
+    window.localStorage.setItem(TOKEN_TYPE_STORAGE_ITEM, tokenType);
 
     dispatch({
       type: ACTION_TYPES.SIGN_IN_SUCCESS
@@ -29,7 +35,37 @@ export const signIn = data => async dispatch => {
   }
 };
 
-export const signOut = () => ({ type: ACTION_TYPES.SIGN_OUT });
+export const signOut = () => dispatch => {
+  window.localStorage.removeItem(TOKEN_STORAGE_ITEM);
+  window.localStorage.removeItem(TOKEN_TYPE_STORAGE_ITEM);
+
+  dispatch({ type: ACTION_TYPES.SIGN_OUT });
+};
+
+export const checkAuthentication = () => dispatch => {
+  try {
+    const token = window.localStorage.getItem(TOKEN_STORAGE_ITEM);
+    const tokenType = window.localStorage.getItem(TOKEN_TYPE_STORAGE_ITEM);
+
+    if (typeof token !== 'string' || typeof tokenType !== 'string') {
+      throw new Error();
+    }
+
+    const jwt = parseJwt(token);
+    if (typeof jwt.exp !== 'number' || jwt.exp * 1000 <= new Date().getTime()) {
+      throw new Error();
+    }
+
+    axios.defaults.headers['Authorization'] = `${tokenType} ${token}`;
+    dispatch({
+      type: ACTION_TYPES.SIGN_IN_SUCCESS
+    });
+  } catch (e) {
+    dispatch({
+      type: ACTION_TYPES.SIGN_OUT
+    });
+  }
+};
 
 const initialState = {
   isAuthenticated: false,

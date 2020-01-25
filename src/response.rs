@@ -6,19 +6,20 @@ use {
 };
 
 #[derive(Debug, Serialize)]
-pub struct ApiResponse<T> {
-    pub data: T,
+pub enum ApiResponse<T> {
+    Data(T),
+    Empty,
 }
 
 impl<T> ApiResponse<T> {
     pub fn new(data: T) -> Self {
-        ApiResponse { data }
+        ApiResponse::Data(data)
     }
 }
 
 impl ApiResponse<()> {
     pub fn empty() -> Self {
-        ApiResponse { data: () }
+        ApiResponse::Empty
     }
 }
 
@@ -30,7 +31,10 @@ where
     type Future = Ready<Result<HttpResponse, Error>>;
 
     fn respond_to(self, _req: &HttpRequest) -> Self::Future {
-        ready(Ok(HttpResponse::Ok().json(self)))
+        ready(Ok(match self {
+            ApiResponse::Data(data) => HttpResponse::Ok().json(data),
+            ApiResponse::Empty => HttpResponse::new(StatusCode::default()),
+        }))
     }
 }
 
