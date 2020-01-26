@@ -1,9 +1,9 @@
 use actix_web::{http::StatusCode, web, Responder};
 
-use crate::response::ApiResponse;
 use crate::{
     config::db::Pool,
     models::account::{SignInData, SignUpData},
+    response::ApiResponse,
     response::ServiceError,
     services::{account_service, account_token_service::TOKEN_TYPE},
 };

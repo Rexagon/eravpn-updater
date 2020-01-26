@@ -20,5 +20,9 @@ pub fn configure_services(cfg: &mut web::ServiceConfig) {
                             .route(web::post().to(account_controller::sign_up))
                     )
             )
+            .service(
+                web::resource("/releases")
+                    .route(web::get().to(releases_controller::all_releases))
+            )
     );
 }
