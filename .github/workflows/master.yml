@@ -31,7 +31,7 @@ jobs:
         strip_components: 2
     - uses: appleboy/ssh-action@master
       with:
-        script: systemctl restart eravpn-updater-backend
+        script: sudo systemctl restart eravpn-updater-backend
 
   build_frontend:
     runs-on: ubuntu-latest
