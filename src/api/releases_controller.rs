@@ -1,35 +1,11 @@
 use actix_web::{web, Responder};
 
 use crate::{
-    config::db::Pool, models::release::Release, response::ApiResponse, services::releases_service,
+    config::db::Pool,
+    models::release::ReleaseResponse,
+    response::{ApiResponse, ServiceError},
+    services::releases_service::{self, ReleasesServiceError},
 };
-
-#[derive(Serialize)]
-pub struct ReleaseResponse {
-    pub id: i32,
-    pub version_major: i32,
-    pub version_minor: i32,
-    pub version_patch: i32,
-    pub creation_date: i64,
-    pub active: bool,
-    pub description: Option<String>,
-    pub changelog: Option<String>,
-}
-
-impl ReleaseResponse {
-    fn new(data: &mut Release) -> Self {
-        ReleaseResponse {
-            id: data.id,
-            version_major: data.version_major,
-            version_minor: data.version_minor,
-            version_patch: data.version_patch,
-            creation_date: data.creation_date.timestamp() * 1000,
-            active: data.active,
-            description: data.description.take(),
-            changelog: data.changelog.take(),
-        }
-    }
-}
 
 pub async fn all_releases(pool: web::Data<Pool>) -> impl Responder {
     ApiResponse::new(
@@ -38,4 +14,31 @@ pub async fn all_releases(pool: web::Data<Pool>) -> impl Responder {
             .map(ReleaseResponse::new)
             .collect::<Vec<ReleaseResponse>>(),
     )
+}
+
+pub async fn get_release(
+    version: web::Path<(u16, u16, u16)>,
+    pool: web::Data<Pool>,
+) -> impl Responder {
+    let version = (version.0.into(), version.1.into(), version.2.into());
+
+    releases_service::get_release(version, &pool)
+        .map(|mut release| ReleaseResponse::new(&mut release))
+        .map(ApiResponse::new)
+        .map_err(|err| match err {
+            ReleasesServiceError::ReleaseNotFound => ServiceError::not_found(err),
+            _ => ServiceError::bad_request(err),
+        })
+}
+
+pub async fn create_release(
+    version: web::Path<(u16, u16, u16)>,
+    pool: web::Data<Pool>,
+) -> impl Responder {
+    let version = (version.0.into(), version.1.into(), version.2.into());
+
+    match releases_service::create_release(version, &pool) {
+        Ok(id) => Ok(ApiResponse::new(id)),
+        Err(err) => Err(ServiceError::bad_request(err)),
+    }
 }

@@ -58,6 +58,14 @@ impl ServiceError {
             },
         }
     }
+
+    pub fn bad_request(message: impl ToString) -> Self {
+        Self::new(StatusCode::BAD_REQUEST, message)
+    }
+
+    pub fn not_found(message: impl ToString) -> Self {
+        Self::new(StatusCode::NOT_FOUND, message)
+    }
 }
 
 impl error::ResponseError for ServiceError {

@@ -24,5 +24,16 @@ pub fn configure_services(cfg: &mut web::ServiceConfig) {
                 web::resource("/releases")
                     .route(web::get().to(releases_controller::all_releases))
             )
+            .service(
+                web::scope("/release")
+                    .service(
+                        web::resource("/{major}/{minor}/{patch}")
+                            .route(web::get().to(releases_controller::get_release))
+                    )
+                    .service(
+                        web::resource("/{major}/{minor}/{patch}")
+                            .route(web::post().to(releases_controller::create_release))
+                    )
+            )
     );
 }
