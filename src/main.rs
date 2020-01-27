@@ -32,7 +32,7 @@ use {
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
     dotenv::dotenv().expect("Failed to read .env file");
-    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_LOG", "debug");
 
     env_logger::init();
 
@@ -47,8 +47,8 @@ async fn main() -> io::Result<()> {
         App::new()
             .data(pool.clone())
             .wrap(actix_web::middleware::Logger::default())
-            .wrap(Cors::default())
             .wrap(crate::middleware::auth_middleware::Authentication)
+            .wrap(Cors::default())
             .configure(config::app::configure_services)
     })
     .bind(&app_url)?

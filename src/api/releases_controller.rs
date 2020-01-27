@@ -1,18 +1,18 @@
 use actix_web::web;
 
 use crate::{
-    api_response::{ApiResponse, ResponseBody, ServiceError},
+    api_response::{ApiResponse, ServiceError},
     config::db::Pool,
     models::release::ReleaseResponse,
     services::releases_service::{self, ReleasesServiceError},
 };
 
-pub async fn all_releases(pool: web::Data<Pool>) -> ResponseBody<Vec<ReleaseResponse>> {
-    releases_service::all_releases(&pool)
+pub async fn all_releases(pool: web::Data<Pool>) -> ApiResponse<Vec<ReleaseResponse>> {
+    Ok(releases_service::all_releases(&pool)
         .iter_mut()
         .map(ReleaseResponse::new)
         .collect::<Vec<ReleaseResponse>>()
-        .into()
+        .into())
 }
 
 pub async fn get_release(

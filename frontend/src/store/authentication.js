@@ -4,12 +4,58 @@ import { parseJwt } from '../stuff/jwt';
 const TOKEN_STORAGE_ITEM = 'token';
 const TOKEN_TYPE_STORAGE_ITEM = 'token_type';
 
-export const ACTION_TYPES = {
+const ACTION_TYPES = {
   SIGN_IN: 'SIGN_IN',
   SIGN_IN_SUCCESS: 'SIGN_IN_SUCCESS',
   SIGN_IN_FAILURE: 'SIGN_IN_FAILURE',
   SIGN_OUT: 'SIGN_OUT'
 };
+
+const initialState = {
+  isAuthenticated: false,
+  isInProcess: false,
+  hasFailure: false
+};
+
+export default (state = initialState, action) => {
+  switch (action.type) {
+    case ACTION_TYPES.SIGN_IN:
+      return {
+        ...state,
+        isAuthenticated: false,
+        isInProcess: true,
+        hasFailure: false
+      };
+
+    case ACTION_TYPES.SIGN_IN_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
+        isInProcess: false,
+        hasFailure: false
+      };
+
+    case ACTION_TYPES.SIGN_IN_FAILURE:
+      return {
+        ...state,
+        isAuthenticated: false,
+        isInProcess: false,
+        hasFailure: true
+      };
+
+    case ACTION_TYPES.SIGN_OUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        isInProcess: false,
+        hasFailure: false
+      };
+
+    default:
+      return state;
+  }
+};
+
 
 export const signIn = data => async dispatch => {
   dispatch({
@@ -64,50 +110,5 @@ export const checkAuthentication = () => dispatch => {
     dispatch({
       type: ACTION_TYPES.SIGN_OUT
     });
-  }
-};
-
-const initialState = {
-  isAuthenticated: false,
-  isInProcess: false,
-  hasFailure: false
-};
-
-export default (state = initialState, action) => {
-  switch (action.type) {
-    case ACTION_TYPES.SIGN_IN:
-      return {
-        ...state,
-        isAuthenticated: false,
-        isInProcess: true,
-        hasFailure: false
-      };
-
-    case ACTION_TYPES.SIGN_IN_SUCCESS:
-      return {
-        ...state,
-        isAuthenticated: true,
-        isInProcess: false,
-        hasFailure: false
-      };
-
-    case ACTION_TYPES.SIGN_IN_FAILURE:
-      return {
-        ...state,
-        isAuthenticated: false,
-        isInProcess: false,
-        hasFailure: true
-      };
-
-    case ACTION_TYPES.SIGN_OUT:
-      return {
-        ...state,
-        isAuthenticated: false,
-        isInProcess: false,
-        hasFailure: false
-      };
-
-    default:
-      return state;
   }
 };

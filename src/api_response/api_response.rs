@@ -9,7 +9,7 @@ use crate::api_response::ServiceError;
 pub type ApiResponse<T> = Result<ResponseBody<T>, ServiceError>;
 
 #[derive(Debug, Serialize)]
-pub struct ResponseBody<T>(T);
+pub struct ResponseBody<T>(pub T);
 
 impl<T> Responder for ResponseBody<T>
 where

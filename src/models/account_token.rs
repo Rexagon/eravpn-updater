@@ -20,4 +20,4 @@ impl AccountTokenResponse {
     }
 }
 
-pub static TOKEN_TYPE: &'static str = "bearer";
+pub static TOKEN_TYPE: &'static str = "Bearer";
