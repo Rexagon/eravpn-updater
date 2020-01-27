@@ -6,8 +6,6 @@ use {
 use crate::models::account::Account;
 use crate::{config::db::Pool, models::account_token::AccountToken};
 
-pub static TOKEN_TYPE: &'static str = "bearer";
-
 pub static KEY: [u8; 16] = *include_bytes!("../secret.key");
 static ONE_WEEK: i64 = 60 * 60 * 24 * 7;
 

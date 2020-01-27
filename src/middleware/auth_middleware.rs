@@ -15,7 +15,9 @@ use {
     },
 };
 
-use crate::{config::db::Pool, constants, response::ServiceError, services::account_token_service};
+use crate::{
+    api_response::ServiceError, config::db::Pool, constants, services::account_token_service,
+};
 
 pub struct Authentication;
 

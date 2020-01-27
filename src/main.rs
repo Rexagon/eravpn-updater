@@ -13,13 +13,14 @@ extern crate diesel_migrations;
 extern crate serde_derive;
 
 mod api;
+mod api_response;
 mod config;
 mod middleware;
 mod models;
 mod services;
 
 mod constants;
-mod response;
+mod messages_enum;
 mod schema;
 
 use {
